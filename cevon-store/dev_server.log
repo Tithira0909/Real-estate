@@ -1,0 +1,21 @@
+
+> cevon-store@0.0.0 dev
+> vite
+
+
+  VITE v7.3.1  ready in 262 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+5:28:26 PM [vite] (client) hmr update /src/components/CevonStore.jsx, /src/index.css
+5:34:02 PM [vite] (client) hmr update /src/components/CevonStore.jsx, /src/index.css
+7:00:41 PM [vite] (client) page reload client/index.html
+7:00:41 PM [vite] (client) page reload client/dist/index.html
+7:00:41 PM [vite] vite.config.js changed, restarting server...
+7:00:41 PM [vite] (client) page reload src/App.jsx
+7:00:41 PM [vite] (client) hmr update /src/index.css
+7:00:41 PM [vite] (client) page reload src/main.jsx
+7:00:41 PM [vite] (client) page reload src/components/CevonStore.jsx
+7:00:41 PM [vite] (client) page reload index.html
+7:00:41 PM [vite] (client) page reload tailwind.config.js
+7:00:42 PM [vite] server restarted.
