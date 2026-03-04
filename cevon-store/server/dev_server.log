@@ -1,0 +1,33 @@
+
+> server@1.0.0 start
+> node server.js
+
+node:internal/process/promises:394
+    triggerUncaughtException(err, true /* fromPromise */);
+    ^
+
+Error
+    at Database.<anonymous> (/app/cevon-store/server/node_modules/sequelize/lib/dialects/sqlite/query.js:185:27)
+    at /app/cevon-store/server/node_modules/sequelize/lib/dialects/sqlite/query.js:183:50
+    at new Promise (<anonymous>)
+    at Query.run (/app/cevon-store/server/node_modules/sequelize/lib/dialects/sqlite/query.js:183:12)
+    at /app/cevon-store/server/node_modules/sequelize/lib/sequelize.js:315:28
+    at async SQLiteQueryInterface.addColumn (/app/cevon-store/server/node_modules/sequelize/lib/dialects/abstract/query-interface.js:184:12)
+    at async Product.sync (/app/cevon-store/server/node_modules/sequelize/lib/model.js:958:11)
+    at async Sequelize.sync (/app/cevon-store/server/node_modules/sequelize/lib/sequelize.js:377:9) {
+  name: 'SequelizeDatabaseError',
+  parent: [Error: SQLITE_ERROR: Cannot add a NOT NULL column with default value NULL] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'ALTER TABLE `Products` ADD `images` VARCHAR(255) NOT NULL;'
+  },
+  original: [Error: SQLITE_ERROR: Cannot add a NOT NULL column with default value NULL] {
+    errno: 1,
+    code: 'SQLITE_ERROR',
+    sql: 'ALTER TABLE `Products` ADD `images` VARCHAR(255) NOT NULL;'
+  },
+  sql: 'ALTER TABLE `Products` ADD `images` VARCHAR(255) NOT NULL;',
+  parameters: {}
+}
+
+Node.js v22.22.0

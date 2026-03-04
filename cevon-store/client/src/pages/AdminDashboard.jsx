@@ -1,21 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus, Edit, Trash2, X, Search, Package } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Search, Package, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ onLogout }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+
+  // Axios instance with Authorization header
+  const api = axios.create({
+    baseURL: 'http://localhost:3001',
+  });
+
+  api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  });
+
+  // Handle unauthorized responses globally
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        handleLogout();
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken');
+    if (onLogout) onLogout(false);
+    navigate('/admin/login');
+  };
 
   const [formData, setFormData] = useState({
     name: '',
     category: 'Necklaces',
     price: '',
     description: '',
-    image: '',
-    stock: 10
+    images: ['', '', '', '', '', ''], // Up to 6 images
+    stock: 10,
+    materials: '',
+    dimensions: '',
+    weight: ''
   });
 
   const categories = ['Necklaces', 'Rings', 'Earrings', 'Bracelets', 'Pendants'];
@@ -27,7 +62,7 @@ const AdminDashboard = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:3001/products');
+      const response = await api.get('/products');
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products", error);
@@ -40,28 +75,39 @@ const AdminDashboard = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (index, value) => {
+    const newImages = [...formData.images];
+    newImages[index] = value;
+    setFormData({ ...formData, images: newImages });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Clean up empty strings from images array before sending
+      const payload = { ...formData, images: formData.images.filter(img => img.trim() !== '') };
+
       if (editingProduct) {
-        await axios.put(`http://localhost:3001/products/${editingProduct.id}`, formData);
+        await api.put(`/products/${editingProduct.id}`, payload);
       } else {
-        await axios.post('http://localhost:3001/products', formData);
+        await api.post('/products', payload);
       }
       fetchProducts();
       closeModal();
     } catch (error) {
       console.error("Error saving product", error);
+      alert(error.response?.data?.error || "Failed to save product.");
     }
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await axios.delete(`http://localhost:3001/products/${id}`);
+        await api.delete(`/products/${id}`);
         fetchProducts();
       } catch (error) {
         console.error("Error deleting product", error);
+        alert(error.response?.data?.error || "Failed to delete product.");
       }
     }
   };
@@ -69,7 +115,10 @@ const AdminDashboard = () => {
   const openModal = (product = null) => {
     if (product) {
       setEditingProduct(product);
-      setFormData(product);
+      // Ensure we have an array of exactly 6 elements for the UI form
+      const productImages = product.images || (product.image ? [product.image] : []);
+      const paddedImages = [...productImages, '', '', '', '', '', ''].slice(0, 6);
+      setFormData({ ...product, images: paddedImages });
     } else {
       setEditingProduct(null);
       setFormData({
@@ -77,8 +126,11 @@ const AdminDashboard = () => {
         category: 'Necklaces',
         price: '',
         description: '',
-        image: '',
-        stock: 10
+        images: ['', '', '', '', '', ''],
+        stock: 10,
+        materials: '',
+        dimensions: '',
+        weight: ''
       });
     }
     setIsModalOpen(true);
@@ -97,18 +149,28 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100 pt-32 pb-12 font-sans">
       <div className="container mx-auto px-6">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-serif text-[#0B2529]">Dashboard</h1>
             <p className="text-gray-500 text-sm mt-1">Manage your inventory and products</p>
           </div>
-          <button
-            onClick={() => openModal()}
-            className="flex items-center gap-2 bg-[#0B2529] text-white px-6 py-3 rounded-lg hover:bg-[#D4AF37] transition-colors shadow-md"
-          >
-            <Plus size={18} />
-            <span className="text-sm font-medium uppercase tracking-wide">Add Product</span>
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={() => openModal()}
+              className="flex items-center gap-2 bg-[#0B2529] text-white px-6 py-3 rounded-lg hover:bg-[#D4AF37] transition-colors shadow-md"
+            >
+              <Plus size={18} />
+              <span className="text-sm font-medium uppercase tracking-wide hidden sm:block">Add Product</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-white text-red-500 border border-red-200 px-6 py-3 rounded-lg hover:bg-red-50 transition-colors shadow-sm"
+              title="Logout"
+            >
+              <LogOut size={18} />
+              <span className="text-sm font-medium uppercase tracking-wide hidden sm:block">Logout</span>
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards (Simple) */}
@@ -229,13 +291,40 @@ const AdminDashboard = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Image URL</label>
-                  <input type="url" name="image" value={formData.image} onChange={handleInputChange} required placeholder="https://..." className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#0B2529] outline-none transition-colors" />
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Description</label>
+                  <textarea name="description" value={formData.description} onChange={handleInputChange} rows="3" className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#0B2529] outline-none transition-colors resize-none"></textarea>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Materials</label>
+                    <input type="text" name="materials" value={formData.materials} onChange={handleInputChange} placeholder="e.g. 18k Gold" className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#0B2529] outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Dimensions</label>
+                    <input type="text" name="dimensions" value={formData.dimensions} onChange={handleInputChange} placeholder="e.g. 20 inches" className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#0B2529] outline-none transition-colors" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Weight</label>
+                    <input type="text" name="weight" value={formData.weight} onChange={handleInputChange} placeholder="e.g. 5g" className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#0B2529] outline-none transition-colors" />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Description</label>
-                  <textarea name="description" value={formData.description} onChange={handleInputChange} rows="4" className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#0B2529] outline-none transition-colors resize-none"></textarea>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Product Images (Up to 6 URLs)</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {formData.images.map((img, index) => (
+                      <input
+                        key={index}
+                        type="url"
+                        value={img}
+                        onChange={(e) => handleImageChange(index, e.target.value)}
+                        placeholder={`Image URL ${index + 1}${index === 0 ? ' (Required)' : ''}`}
+                        required={index === 0}
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#0B2529] outline-none transition-colors text-xs"
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 

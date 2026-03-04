@@ -87,27 +87,29 @@ const Home = () => {
       <section className="py-24 bg-[#F9F9F9]">
         <div className="container mx-auto px-6">
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16">
-            <div className="mb-8 md:mb-0">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16">
+            <div className="mb-8 md:mb-0 shrink-0">
               <h2 className="text-4xl md:text-5xl font-serif text-[#0B2529] mb-4">Curated Pieces</h2>
               <div className="h-0.5 w-24 bg-[#D4AF37]"></div>
             </div>
 
-            {/* Category Filter */}
-            <div className="flex flex-wrap gap-6 text-sm uppercase tracking-wider text-gray-500">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`pb-1 border-b-2 transition-colors ${
-                    activeCategory === cat
-                      ? 'border-[#D4AF37] text-[#0B2529]'
-                      : 'border-transparent hover:text-[#0B2529]'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            {/* Category Filter - Scrollable on Mobile */}
+            <div className="w-full md:w-auto overflow-x-auto pb-4 md:pb-0 hide-scrollbar">
+              <div className="flex whitespace-nowrap gap-6 text-sm uppercase tracking-wider text-gray-500 min-w-max">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`pb-1 border-b-2 transition-colors shrink-0 ${
+                      activeCategory === cat
+                        ? 'border-[#D4AF37] text-[#0B2529]'
+                        : 'border-transparent hover:text-[#0B2529]'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
