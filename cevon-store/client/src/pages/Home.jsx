@@ -1,36 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Star, Heart } from 'lucide-react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 const Home = () => {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
   const { addToCart } = useCart();
 
   const categories = ['All', 'Necklaces', 'Rings', 'Earrings', 'Bracelets', 'Pendants'];
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get('http://localhost:3001/products');
-        setFeaturedProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-    fetchProducts();
-  }, []);
+  const products = [
+    {
+      id: 1,
+      name: "The Ethereal Drop",
+      price: 1250,
+      category: "Necklaces",
+      image: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2565&auto=format&fit=crop",
+      tag: "Best Seller"
+    },
+    {
+      id: 2,
+      name: "Solstice Diamond Ring",
+      price: 3400,
+      category: "Rings",
+      image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=2670&auto=format&fit=crop",
+      tag: "New Arrival"
+    },
+    {
+      id: 3,
+      name: "Lunar Pearl Earrings",
+      price: 890,
+      category: "Earrings",
+      image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=2670&auto=format&fit=crop",
+      tag: null
+    },
+    {
+      id: 4,
+      name: "Obsidian Gold Cuff",
+      price: 2100,
+      category: "Bracelets",
+      image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2670&auto=format&fit=crop",
+      tag: "Limited Edition"
+    }
+  ];
 
   const filteredProducts = activeCategory === 'All'
-    ? featuredProducts.slice(0, 4)
-    : featuredProducts.filter(p => p.category === activeCategory).slice(0, 4);
+    ? products
+    : products.filter(p => p.category === activeCategory);
 
   return (
-    <div className="bg-[#F9F9F9] font-sans selection:bg-[#D4AF37] selection:text-white">
+    <>
       {/* Hero Section */}
       <header className="relative h-screen w-full overflow-hidden">
+        {/* Background Image with Dark Overlay */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
@@ -40,6 +62,7 @@ const Home = () => {
            <div className="absolute inset-0 bg-gradient-to-b from-[#0B2529]/60 via-[#0B2529]/30 to-[#0B2529]/90"></div>
         </div>
 
+        {/* Hero Content */}
         <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
           <p className="text-[#D4AF37] uppercase tracking-[0.3em] text-xs md:text-sm mb-6 animate-[fadeIn_1s_ease-out_0.5s_both]">
             Fine Jewelry for the Modern Soul
@@ -47,23 +70,30 @@ const Home = () => {
           <h1 className="text-5xl md:text-7xl lg:text-9xl font-serif text-white mb-8 leading-tight animate-[fadeIn_1s_ease-out_0.8s_both]">
             Adorn the <span className="font-signature text-[#D4AF37] text-6xl md:text-8xl lg:text-[9rem] block mt-2 lg:inline lg:mt-0">Moment</span>
           </h1>
-          <Link to="/shop/All" className="group relative px-8 py-4 bg-transparent border border-white/30 text-white overflow-hidden transition-all duration-300 hover:border-[#D4AF37] hover:text-[#D4AF37] animate-[fadeIn_1s_ease-out_1.1s_both] mt-4">
+          <Link to="/shop/All" className="group relative px-8 py-4 bg-transparent border border-white/30 text-white overflow-hidden transition-all duration-300 hover:border-[#D4AF37] hover:text-[#D4AF37] animate-[fadeIn_1s_ease-out_1.1s_both] mt-4 inline-block">
             <span className="relative z-10 text-sm uppercase tracking-widest flex items-center gap-2">
               Explore Collection <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform"/>
             </span>
           </Link>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce">
+          <div className="w-[1px] h-12 bg-white/20"></div>
         </div>
       </header>
 
       {/* Featured Collection Section */}
       <section className="py-24 bg-[#F9F9F9]">
         <div className="container mx-auto px-6">
+          {/* Section Header */}
           <div className="flex flex-col md:flex-row justify-between items-end mb-16">
             <div className="mb-8 md:mb-0">
               <h2 className="text-4xl md:text-5xl font-serif text-[#0B2529] mb-4">Curated Pieces</h2>
               <div className="h-0.5 w-24 bg-[#D4AF37]"></div>
             </div>
 
+            {/* Category Filter */}
             <div className="flex flex-wrap gap-6 text-sm uppercase tracking-wider text-gray-500">
               {categories.map((cat) => (
                 <button
@@ -81,36 +111,47 @@ const Home = () => {
             </div>
           </div>
 
+          {/* Product Grid - Masonry Feel */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {filteredProducts.map((product) => (
               <div key={product.id} className="group cursor-pointer">
                 <div className="relative overflow-hidden aspect-[3/4] mb-6 bg-gray-100">
-                  <Link to={`/product/${product.id}`}>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover image-hover-zoom"
-                    />
-                  </Link>
+                  {/* Tag */}
+                  {product.tag && (
+                    <span className="absolute top-4 left-4 z-20 bg-white/90 text-[#0B2529] text-[10px] uppercase tracking-widest px-3 py-1">
+                      {product.tag}
+                    </span>
+                  )}
 
-                  <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  {/* Image */}
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover image-hover-zoom"
+                  />
 
-                   <button
-                    onClick={() => addToCart(product)}
-                    className="absolute bottom-6 left-6 right-6 bg-white text-[#0B2529] py-3 text-xs uppercase tracking-widest hover:bg-[#D4AF37] hover:text-white transition-colors transform translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 duration-300 z-10"
-                   >
-                     Add to Bag
-                   </button>
+                  {/* Hover Actions */}
+                  <div className="absolute inset-0 bg-black/5 lg:opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
-                  <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:text-red-500 z-10">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addToCart(product);
+                    }}
+                    className="absolute bottom-6 left-6 right-6 bg-white text-[#0B2529] py-3 text-xs uppercase tracking-widest hover:bg-[#D4AF37] hover:text-white transition-all transform lg:translate-y-4 lg:opacity-0 group-hover:opacity-100 group-hover:translate-y-0 duration-300 shadow-lg z-20"
+                  >
+                    Add to Bag
+                  </button>
+
+                  {/* Wishlist Button */}
+                  <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full lg:opacity-0 group-hover:opacity-100 transition-all duration-300 hover:text-red-500 z-20 hover:scale-110">
                     <Heart size={16} />
                   </button>
                 </div>
 
+                {/* Product Info */}
                 <div className="text-center md:text-left">
-                  <Link to={`/product/${product.id}`}>
-                    <h3 className="font-serif text-xl text-[#0B2529] mb-1 group-hover:text-[#D4AF37] transition-colors">{product.name}</h3>
-                  </Link>
+                  <h3 className="font-serif text-xl text-[#0B2529] mb-1 group-hover:text-[#D4AF37] transition-colors">{product.name}</h3>
                   <p className="text-gray-500 font-light text-sm mb-2">{product.category}</p>
                   <p className="font-medium text-[#0B2529]">${product.price.toLocaleString()}</p>
                 </div>
@@ -119,7 +160,7 @@ const Home = () => {
           </div>
 
           <div className="mt-16 text-center">
-             <Link to="/shop/All" className="border-b border-[#0B2529] text-[#0B2529] pb-1 uppercase tracking-widest text-sm hover:text-[#D4AF37] hover:border-[#D4AF37] transition-colors">
+             <Link to="/shop/All" className="border-b border-[#0B2529] text-[#0B2529] pb-1 uppercase tracking-widest text-sm hover:text-[#D4AF37] hover:border-[#D4AF37] transition-colors inline-block">
                View All Collections
              </Link>
           </div>
@@ -136,6 +177,7 @@ const Home = () => {
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-16">
+            {/* Image Grid */}
             <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4">
               <img
                 src="https://images.unsplash.com/photo-1589674781759-c21c37956a44?q=80&w=2670&auto=format&fit=crop"
@@ -149,6 +191,7 @@ const Home = () => {
               />
             </div>
 
+            {/* Content */}
             <div className="w-full lg:w-1/2 text-white">
               <div className="flex items-center gap-4 mb-6">
                 <span className="w-12 h-[1px] bg-[#D4AF37]"></span>
@@ -171,11 +214,15 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonial Section */}
+      {/* Testimonial / Social Proof */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6 text-center">
           <div className="flex justify-center gap-2 text-[#D4AF37] mb-8">
-            {[...Array(5)].map((_, i) => <Star key={i} size={20} fill="#D4AF37" />)}
+            <Star size={20} fill="#D4AF37" />
+            <Star size={20} fill="#D4AF37" />
+            <Star size={20} fill="#D4AF37" />
+            <Star size={20} fill="#D4AF37" />
+            <Star size={20} fill="#D4AF37" />
           </div>
           <h3 className="text-2xl md:text-4xl font-serif text-[#0B2529] max-w-4xl mx-auto leading-relaxed mb-8">
             "The piece I received from Cevon wasn't just jewelry. It was a work of art that captured a memory I never want to forget."
@@ -183,7 +230,25 @@ const Home = () => {
           <p className="text-sm uppercase tracking-widest text-gray-500">— Isabella R., New York</p>
         </div>
       </section>
-    </div>
+
+      {/* Newsletter */}
+      <section className="bg-[#F2F2F2] py-20 border-t border-gray-200">
+        <div className="container mx-auto px-6 text-center max-w-2xl">
+          <h2 className="text-3xl font-serif text-[#0B2529] mb-4">Join the Inner Circle</h2>
+          <p className="text-gray-600 mb-8 font-light">Be the first to receive updates on new collections, style inspiration, and exclusive events.</p>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <input
+              type="email"
+              placeholder="Your Email Address"
+              className="flex-1 bg-white px-6 py-4 outline-none border border-gray-300 focus:border-[#0B2529] transition-colors"
+            />
+            <button className="bg-[#0B2529] text-white px-10 py-4 uppercase tracking-widest text-sm hover:bg-[#D4AF37] transition-colors duration-300">
+              Subscribe
+            </button>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 

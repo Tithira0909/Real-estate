@@ -64,14 +64,17 @@ const Shop = () => {
 
                    {/* Add to Cart Button */}
                    <button
-                     onClick={() => addToCart(product)}
-                     className="absolute bottom-6 left-6 right-6 bg-white text-[#0B2529] py-3 text-xs uppercase tracking-widest hover:bg-[#D4AF37] hover:text-white transition-all transform translate-y-4 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 duration-300 shadow-lg z-20"
+                     onClick={(e) => {
+                       e.preventDefault();
+                       addToCart(product);
+                     }}
+                     className="absolute bottom-6 left-6 right-6 bg-white text-[#0B2529] py-3 text-xs uppercase tracking-widest hover:bg-[#D4AF37] hover:text-white transition-all transform lg:translate-y-4 lg:opacity-0 group-hover:opacity-100 group-hover:translate-y-0 duration-300 shadow-lg z-20"
                    >
                      Add to Bag
                    </button>
 
                   {/* Wishlist Button */}
-                  <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:text-red-500 z-20 hover:scale-110">
+                  <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full lg:opacity-0 group-hover:opacity-100 transition-all duration-300 hover:text-red-500 z-20 hover:scale-110">
                     <Heart size={16} />
                   </button>
                 </div>

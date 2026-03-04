@@ -6,7 +6,6 @@ import Shop from './pages/Shop';
 import ProductDetails from './pages/ProductDetails';
 import Checkout from './pages/Checkout';
 import AdminDashboard from './pages/AdminDashboard';
-import './App.css';
 
 function App() {
   return (
