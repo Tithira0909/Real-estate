@@ -15,7 +15,7 @@ const Home = () => {
       name: "The Ethereal Drop",
       price: 1250,
       category: "Necklaces",
-      image: "https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2565&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2670&auto=format&fit=crop",
       tag: "Best Seller"
     },
     {
@@ -187,7 +187,7 @@ const Home = () => {
                 className="w-full h-80 object-cover mt-12"
               />
               <img
-                src="https://images.unsplash.com/photo-1617038220319-33fc2a513696?q=80&w=2670&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=2670&auto=format&fit=crop"
                 alt="Detail"
                 className="w-full h-80 object-cover"
               />
